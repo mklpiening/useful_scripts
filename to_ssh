@@ -1,0 +1,2 @@
+#!/bin/bash
+sed -E "s/https:\/\/([^\/]*)\//git@\1:/g" $1 -i

@@ -1,0 +1,19 @@
+#!/bin/bash
+
+case $1 in
+  on)
+    cp /etc/X11/20-egpu-on.conf /etc/X11/xorg.conf.d/20-egpu.conf
+
+    modprobe -r nvidia_uvm
+    modprobe -r nvidia_drm
+    modprobe -r nvidia_modeset
+    modprobe -r nvidia
+
+    nvidia-modprobe
+  ;;
+  off)
+    cp /etc/X11/20-egpu-off.conf /etc/X11/xorg.conf.d/20-egpu.conf
+  ;;
+esac
+
+#i3-msg exit

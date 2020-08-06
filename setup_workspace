@@ -1,0 +1,30 @@
+#!/bin/bash
+
+# create compile commands used for linting and intellisense
+rm -r build
+catkin_make -DCMAKE_EXPORT_COMPILE_COMMANDS=1 $@
+
+sed -i 's/\/usr\//\/bedrock\/strata\/ubuntu\/usr\//g' compile_commands.json
+sed -i -E 's/"command": "(.+)"/"command": "\1 -I\/bedrock\/strata\/ubuntu\/usr\/include -I\/bedrock\/strata\/ubuntu\/usr\/local\/include"/g' compile_commands.json
+
+if [ -f "compile_commands.json" ]
+then
+    rm compile_commands.json
+fi
+cp build/compile_commands.json compile_commands.json
+
+CMAKES=$(find src -name "CMakeLists.txt")
+for CMAKE in $CMAKES 
+do
+    if [ -f "$(dirname $CMAKE)/compile_commands.json" ]
+    then
+        rm $(dirname $CMAKE)/compile_commands.json
+    fi
+    cp build/compile_commands.json $(dirname $CMAKE)/compile_commands.json
+done
+
+# add clanf_format file
+if [ ! -f ".clang-format" ]
+then
+    wget https://raw.githubusercontent.com/davetcoleman/roscpp_code_format/master/.clang-format
+fi

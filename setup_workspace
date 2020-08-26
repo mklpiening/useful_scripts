@@ -21,6 +21,12 @@ do
         rm $(dirname $CMAKE)/compile_commands.json
     fi
     cp build/compile_commands.json $(dirname $CMAKE)/compile_commands.json
+
+    if [ -f "$(dirname $CMAKE)/.ccls" ]
+    then
+        rm $(dirname $CMAKE)/.ccls
+    fi
+    cp /usr/local/share/ccls/conf $(dirname $CMAKE)/.ccls 
 done
 
 # add clanf_format file

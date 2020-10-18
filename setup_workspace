@@ -1,7 +1,9 @@
 #!/bin/bash
 
 # create compile commands used for linting and intellisense
-rm -r build
+mv build .setuptool_build_backup
+mv devel .setuptool_devel_backup
+
 catkin_make -DCMAKE_EXPORT_COMPILE_COMMANDS=1 $@
 
 sed -i 's/\/usr\//\/bedrock\/strata\/ubuntu\/usr\//g' compile_commands.json
@@ -29,8 +31,20 @@ do
     cp /usr/local/share/ccls/conf $(dirname $CMAKE)/.ccls 
 done
 
+mv .setuptool_build_backup build
+mv .setuptool_devel_backup devel
+
 # add clanf_format file
 if [ ! -f ".clang-format" ]
 then
     wget https://raw.githubusercontent.com/davetcoleman/roscpp_code_format/master/.clang-format
+fi
+
+
+# setup script for remote connection
+if [ ! -f "setup_remote.sh" ]
+then
+    echo "#!/bin/bash" > setup_remote.sh
+    echo "export ROS_IP=\"\$(ip a | grep 'w.* state UP' -A3 | grep 'inet' | tail -n1 | awk '{print \$2}' | cut -f1 -d'/')\"" >> setup_remote.sh
+    echo "export ROS_MASTER_URI=\"http://localhost:11311\"" >> setup_remote.sh
 fi
